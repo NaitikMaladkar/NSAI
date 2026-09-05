@@ -17,28 +17,8 @@ public class MainApplication extends Application implements ReactApplication {
   private final ReactNativeHost mReactNativeHost =
       new DefaultReactNativeHost(this) {
         @Override
-        public boolean getUseDeveloperSupport() {
-          return BuildConfig.DEBUG;
-        }
-
-        @Override
-        protected List<ReactPackage> getPackages() {
-          return new PackageList(this).getPackages();
-        }
-
-        @Override
         protected String getJSMainModuleName() {
           return "index";
-        }
-
-        @Override
-        protected boolean isNewArchEnabled() {
-          return BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
-        }
-
-        @Override
-        protected Boolean isHermesEnabled() {
-          return BuildConfig.IS_HERMES_ENABLED;
         }
       };
 
@@ -50,7 +30,7 @@ public class MainApplication extends Application implements ReactApplication {
   @Override
   public ReactHost getReactHost() {
     return DefaultReactHost.getDefaultReactHost(
-        getApplicationContext(), "NerveSynapse", getJSBundleFile());
+        getApplicationContext(), "NerveSynapse", null);
   }
 
   @Override
@@ -60,10 +40,5 @@ public class MainApplication extends Application implements ReactApplication {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       DefaultNewArchitectureEntryPoint.load();
     }
-    ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-  }
-
-  private String getJSBundleFile() {
-    return null;
   }
 }
