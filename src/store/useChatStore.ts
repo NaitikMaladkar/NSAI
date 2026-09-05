@@ -162,25 +162,17 @@ export const useChatStore = create<ChatState>((set, get) => {
         const historyForAI = [...get().messages.filter(m => m.id !== assistantMsg.id && m.id !== userMsg.id), userMsg];
         const reply = await ai.generateReply(historyForAI, abortController.signal);
 
-        // Update assistant message
+        // Update assistant message content
         set(s => ({
           messages: s.messages.map(m =>
             m.id === assistantMsg.id ? {...m, content: reply, updatedAt: Date.now()} : m,
           ),
-          conversations: shouldRetitle
-            ? s.conversations.map(async c => {
-                if (c.id === chatId) {
-                  const title = await ai.suggestTitle(trimmed);
-                  return {...c, title, updatedAt: Date.now()};
-                }
-                return c;
-              }).then ? s.conversations : s.conversations // (the async map above is a guard; we run a separate sync retitling below)
-            : s.conversations.map(c =>
-                c.id === chatId ? {...c, updatedAt: Date.now()} : c,
-              ),
+          conversations: s.conversations.map(c =>
+            c.id === chatId ? {...c, updatedAt: Date.now()} : c,
+          ),
         }));
 
-        // Sync retitling (since map+async doesn't work synchronably in set)
+        // If conversation was still named "New chat", suggest a title (async, separate set)
         if (shouldRetitle) {
           try {
             const title = await ai.suggestTitle(trimmed);
@@ -197,7 +189,7 @@ export const useChatStore = create<ChatState>((set, get) => {
         await persist();
       } catch (e: any) {
         const errMsg =
-          e?.name === 'AbortError'
+          e?.message === 'Aborted'
             ? 'Cancelled'
             : e?.message ?? 'Something went wrong';
         set(s => ({
@@ -276,7 +268,7 @@ export const useChatStore = create<ChatState>((set, get) => {
         await persist();
       } catch (e: any) {
         const errMsg =
-          e?.name === 'AbortError'
+          e?.message === 'Aborted'
             ? 'Cancelled'
             : e?.message ?? 'Something went wrong';
         set(s => ({

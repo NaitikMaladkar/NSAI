@@ -11,8 +11,33 @@ export const Brand = {
   violetSoft: '#A78BFA',
 };
 
-export const DarkTheme = {
-  mode: 'dark' as const,
+export type Theme = {
+  mode: 'light' | 'dark';
+  background: string;
+  sidebar: string;
+  sidebarActive: string;
+  chatArea: string;
+  userBubble: string;
+  userBubbleText: string;
+  assistantBubble: string;
+  assistantBubbleText: string;
+  textPrimary: string;
+  textSecondary: string;
+  textMuted: string;
+  border: string;
+  divider: string;
+  inputBg: string;
+  inputBorder: string;
+  accent: string;
+  accentSoft: string;
+  accentGradientEnd: string;
+  success: string;
+  warning: string;
+  danger: string;
+};
+
+export const DarkTheme: Theme = {
+  mode: 'dark',
   // Surfaces
   background: '#0F0F14',
   sidebar: '#17171F',
@@ -42,8 +67,8 @@ export const DarkTheme = {
   danger: '#EF4444',
 };
 
-export const LightTheme = {
-  mode: 'light' as const,
+export const LightTheme: Theme = {
+  mode: 'light',
   background: '#FFFFFF',
   sidebar: '#F9F9FB',
   sidebarActive: '#ECEEF5',
@@ -67,5 +92,7 @@ export const LightTheme = {
   danger: '#DC2626',
 };
 
-export type Theme = typeof DarkTheme;
-export const themes = {dark: DarkTheme, light: LightTheme};
+export const themes: Record<'light' | 'dark', Theme> = {
+  dark: DarkTheme,
+  light: LightTheme,
+};

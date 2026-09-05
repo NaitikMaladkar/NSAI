@@ -42,9 +42,14 @@ export class MockAIService implements AIService {
     await new Promise<void>((resolve, reject) => {
       const t = setTimeout(resolve, this.latencyMs);
       if (signal) {
+        if (signal.aborted) {
+          clearTimeout(t);
+          reject(new Error('Aborted'));
+          return;
+        }
         signal.addEventListener('abort', () => {
           clearTimeout(t);
-          reject(new DOMException('Aborted', 'AbortError'));
+          reject(new Error('Aborted'));
         });
       }
     });

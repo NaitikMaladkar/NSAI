@@ -6,8 +6,9 @@ import React, {
   useState,
 } from 'react';
 import {useColorScheme} from 'react-native';
-import {themes, ThemeMode} from './colors';
+import {themes} from './colors';
 import type {Theme} from './colors';
+import type {ThemeMode} from '../types';
 
 interface ThemeContextValue {
   theme: Theme;
