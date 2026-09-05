@@ -23,13 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
-
-      - name: Install .NET Workloads
-        run: |
-          dotnet workload install maui-windows
-          dotnet workload install winui3
-        continue-on-error: true
+          node-version: '22'
 
       - name: Set up MSBuild
         uses: microsoft/setup-msbuild@v2
@@ -43,13 +37,12 @@ jobs:
           }
         shell: pwsh
 
-      - name: Configure react-native-windows (modern CLI)
-        run: |
-          npx --yes @react-native-windows/cli@latest init --project-name NerveSynapse --overwrite
+      - name: Configure react-native-windows
+        run: npx react-native init-windows --overwrite --logging
         shell: pwsh
 
       - name: Build Windows app (Release x64)
-        run: npx --yes react-native run-windows --arch x64 --release --no-launch --no-deploy --logging
+        run: npx react-native run-windows --arch x64 --release --no-launch --no-deploy --logging
         shell: pwsh
 
       - name: Find and collect artifacts
