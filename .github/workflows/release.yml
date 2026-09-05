@@ -1,0 +1,91 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v0.0.*'
+      - 'v*.*.*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-android:
+    uses: ./.github/workflows/android.yml
+    with:
+      ref: ${{ github.ref_name }}
+    secrets: inherit
+
+  build-windows:
+    uses: ./.github/workflows/windows.yml
+    with:
+      ref: ${{ github.ref_name }}
+    secrets: inherit
+
+  publish-release:
+    needs: [build-android, build-windows]
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+
+      - name: Download Android artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: android-apk
+          path: release-assets
+
+      - name: Download Windows artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: windows-msix
+          path: release-assets
+
+      - name: List release assets
+        run: ls -la release-assets/
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          VERSION="${GITHUB_REF_NAME}"
+          DATE=$(date +"%Y-%m-%d")
+          cat > NOTES.md <<EOF
+          # NerveSynapse ${VERSION}
+
+          Released: ${DATE}
+
+          ## Downloads
+
+          - **Android**: \`*.apk\` — sideload by tapping the file on your device (enable "Install from unknown sources" if needed).
+          - **Windows**: \`*.msix\` / \`*.msixbundle\` — sideload after enabling Developer Mode or trusted sideloading in Windows Settings.
+
+          ## Highlights
+
+          - React Native 0.87 + react-native-windows
+          - ChatGPT-style dark/light UI
+          - Sidebar with chat history
+          - Mock AI service (real LLM coming in a later release)
+          - Local-only persistence with sync abstraction layer
+
+          > **Pre-launch note**: this is a \`0.0.x\` build. Expect bugs, missing features, and breaking changes between versions.
+          EOF
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: NerveSynapse ${{ github.ref_name }}
+          body_path: NOTES.md
+          prerelease: true
+          files: |
+            release-assets/*.apk
+            release-assets/*.msix
+            release-assets/*.msixbundle
+            release-assets/*.exe
+            release-assets/*.appx
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
