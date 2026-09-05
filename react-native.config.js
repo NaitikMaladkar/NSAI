@@ -1,10 +1,11 @@
-{
-  "project": {
-    "name": "NerveSynapse",
-    "windowsSdkVersion": "10.0.22621",
-    "windowsAppPlatform": "winui3"
+/**
+ * React Native CLI config.
+ * Kept minimal — react-native-windows specific config is added at build time
+ * on Windows runners via `react-native-windows-init`.
+ */
+module.exports = {
+  project: {
+    ios: {},
+    android: {},
   },
-  "dependencies": {
-    "react-native-windows": "0.84.0"
-  }
-}
+};

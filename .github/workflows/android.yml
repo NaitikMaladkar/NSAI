@@ -65,9 +65,18 @@ jobs:
               -dname "CN=NerveSynapse, OU=Dev, O=NaitikMaladkar, L=Earth, S=Earth, C=IN"
           fi
 
+      - name: Pre-flight autolink config (debug)
+        run: |
+          echo "--- node version ---"
+          node --version
+          echo "--- npx version ---"
+          npx --version
+          echo "--- running: npx @react-native-community/cli config ---"
+          npx @react-native-community/cli config 2>&1 | head -100 || true
+
       - name: Build Android debug APK
         working-directory: android
-        run: ./gradlew assembleDebug --no-daemon --stacktrace
+        run: ./gradlew assembleDebug --no-daemon --stacktrace --info 2>&1 | tail -200
 
       - name: Build Android release APK (unsigned)
         working-directory: android
