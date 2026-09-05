@@ -24,7 +24,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
 
       - name: Install .NET Workloads
         run: |
@@ -36,12 +35,12 @@ jobs:
         uses: microsoft/setup-msbuild@v2
 
       - name: Install JS dependencies
-        run: npm ci --legacy-peer-deps
-        shell: pwsh
-        continue-on-error: true
-
-      - name: Install JS dependencies (retry)
-        run: npm install --legacy-peer-deps
+        run: |
+          if (Test-Path package-lock.json) {
+            npm ci --legacy-peer-deps
+          } else {
+            npm install --legacy-peer-deps --no-audit --no-fund
+          }
         shell: pwsh
 
       - name: Configure react-native-windows
@@ -54,12 +53,6 @@ jobs:
         run: npx --yes react-native run-windows --arch x64 --release --no-launch --no-deploy --logging
         shell: pwsh
         continue-on-error: true
-
-      - name: Build via MSBuild (fallback)
-        if: ${{ success() != true }}
-        run: |
-          msbuild windows/NerveSynapse/NerveSynapse.sln /p:Configuration=Release /p:Platform=x64 /p:AppxBundle=Always /p:AppxBundlePlatforms="x64"
-        shell: pwsh
 
       - name: Find and collect artifacts
         run: |

@@ -5,6 +5,6 @@
     "windowsAppPlatform": "winui3"
   },
   "dependencies": {
-    "react-native-windows": "0.87.0"
+    "react-native-windows": "0.84.0"
   }
 }
