@@ -42,7 +42,7 @@ jobs:
         shell: pwsh
 
       - name: Build Windows app (Release x64)
-        run: npx react-native run-windows --arch x64 --release --no-launch --no-deploy --logging --msbuildprops "WindowsAppSDKVerifyTransitiveDependencies=false;WindowsTargetPlatformVersion=10.0.26100.0"
+        run: npx react-native run-windows --arch x64 --release --no-launch --no-deploy --logging --msbuildprops "WindowsAppSDKVerifyTransitiveDependencies=false,WindowsTargetPlatformVersion=10.0.26100.0"
         shell: pwsh
 
       - name: Find and collect artifacts
