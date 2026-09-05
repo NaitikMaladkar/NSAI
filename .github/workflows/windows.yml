@@ -43,16 +43,14 @@ jobs:
           }
         shell: pwsh
 
-      - name: Configure react-native-windows
+      - name: Configure react-native-windows (modern CLI)
         run: |
-          npx --yes react-native-windows-init --overwrite --language cs
+          npx --yes @react-native-windows/cli@latest init --project-name NerveSynapse --overwrite
         shell: pwsh
-        continue-on-error: true
 
       - name: Build Windows app (Release x64)
         run: npx --yes react-native run-windows --arch x64 --release --no-launch --no-deploy --logging
         shell: pwsh
-        continue-on-error: true
 
       - name: Find and collect artifacts
         run: |
