@@ -20,7 +20,7 @@ android {
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName "0.0.1"
+        versionName "0.0.18"
         vectorDrawables.useSupportLibrary = true
     }
     signingConfigs {
@@ -65,7 +65,7 @@ android {
 
 dependencies {
     implementation("com.facebook.react:react-android")
-    if (findProperty('hermesEnabled')?.toBoolean() ?: true) {
+    if (hermesEnabled.toBoolean()) {
         implementation("com.facebook.react:hermes-android")
     } else {
         implementation jscFlavor

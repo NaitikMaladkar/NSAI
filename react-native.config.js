@@ -1,24 +1,12 @@
 /**
  * React Native CLI config.
- * Registers react-native-windows commands ONLY on Windows so the
- * Linux/Android autolink (`npx @react-native-community/cli config`) doesn't
- * try to load @react-native-windows/cli (which needs pwsh.exe to initialize).
+ * Kept minimal — RN 0.76's @react-native-community/cli handles autolinking
+ * natively. On Windows, react-native-windows registers its commands via
+ * the dependency tree automatically.
  */
-const isWindows = process.platform === 'win32';
-
-const config = {
+module.exports = {
   project: {
     ios: {},
     android: {},
   },
 };
-
-if (isWindows) {
-  try {
-    config.commands = require('@react-native-windows/cli').commands;
-  } catch (e) {
-    console.warn('Failed to load @react-native-windows/cli commands:', e.message);
-  }
-}
-
-module.exports = config;
