@@ -41,6 +41,18 @@ jobs:
         run: npx react-native-windows-init --overwrite --language cs --namespace com.nervesynapse.app --version 0.75.20
         shell: pwsh
 
+      - name: Restore NuGet packages
+        run: |
+          $nuget = Get-ChildItem -Path "." -Filter "nuget.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $nuget) {
+            Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile "nuget.exe"
+            $nuget = Get-Item "nuget.exe"
+          }
+          Get-ChildItem -Path windows -Filter "*.sln" -Recurse | ForEach-Object {
+            & $nuget.FullName restore $_.FullName -NonInteractive
+          }
+        shell: pwsh
+
       - name: Build Windows app (Release x64)
         run: npx react-native run-windows --arch x64 --release --no-launch --no-deploy --logging
         shell: pwsh
