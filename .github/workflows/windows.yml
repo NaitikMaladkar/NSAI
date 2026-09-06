@@ -41,15 +41,29 @@ jobs:
         run: npx react-native-windows-init --overwrite --language cs --namespace com.nervesynapse.app --version 0.75.20
         shell: pwsh
 
-      - name: Restore NuGet packages
+      - name: Restore NuGet packages (via msbuild)
         run: |
+          $slns = Get-ChildItem -Path windows -Filter "*.sln" -Recurse -ErrorAction SilentlyContinue
+          foreach ($sln in $slns) {
+            Write-Host "Restoring: $($sln.FullName)"
+            msbuild $sln.FullName /t:Restore /p:RestorePackagesConfig=true /p:Configuration=Release /p:Platform=x64 /m /nologo
+          }
+        shell: pwsh
+
+      - name: Restore NuGet packages for autolinked libraries
+        run: |
+          # autolinked rnw libraries (async-storage, clipboard, etc.) use packages.config
+          # and expect packages at $(SolutionDir)packages — which evaluates from the .sln
+          # they were imported into. Run nuget.exe restore on the .sln explicitly.
           $nuget = Get-ChildItem -Path "." -Filter "nuget.exe" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 1
           if (-not $nuget) {
             Invoke-WebRequest -Uri "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe" -OutFile "nuget.exe"
             $nuget = Get-Item "nuget.exe"
           }
-          Get-ChildItem -Path windows -Filter "*.sln" -Recurse | ForEach-Object {
-            & $nuget.FullName restore $_.FullName -NonInteractive
+          $slns = Get-ChildItem -Path windows -Filter "*.sln" -Recurse -ErrorAction SilentlyContinue
+          foreach ($sln in $slns) {
+            Write-Host "nuget restore $($sln.FullName)"
+            & $nuget.FullName restore $sln.FullName -NonInteractive -PackagesDirectory (Join-Path $sln.DirectoryName "packages")
           }
         shell: pwsh
 
