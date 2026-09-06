@@ -65,6 +65,15 @@ jobs:
             Write-Host "nuget restore $($sln.FullName)"
             & $nuget.FullName restore $sln.FullName -NonInteractive -PackagesDirectory (Join-Path $sln.DirectoryName "packages")
           }
+          # Some autolinked libraries (e.g. @react-native-async-storage/async-storage)
+          # ship with packages.config files pinning OLDER versions of Microsoft.Windows.CppWinRT
+          # than what the RNW sln restores. Restore those explicitly so the .vcxproj
+          # imports resolve at build time.
+          $pkgsDir = Join-Path (Get-Item "windows").FullName "packages"
+          Get-ChildItem -Path node_modules -Filter "packages.config" -Recurse -ErrorAction SilentlyContinue | ForEach-Object {
+            Write-Host "nuget restore (packages.config) $($_.FullName)"
+            & $nuget.FullName restore $_.FullName -NonInteractive -PackagesDirectory $pkgsDir
+          }
         shell: pwsh
 
       - name: Build Windows app (Release x64)
