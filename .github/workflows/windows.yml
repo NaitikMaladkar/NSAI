@@ -38,7 +38,7 @@ jobs:
         shell: pwsh
 
       - name: Configure react-native-windows
-        run: npx react-native-windows-init --overwrite --language cs --namespace com.nervesynapse.app --version 0.76.17
+        run: npx react-native-windows-init --overwrite --language cs --namespace com.nervesynapse.app --version 0.75.20
         shell: pwsh
 
       - name: Build Windows app (Release x64)
